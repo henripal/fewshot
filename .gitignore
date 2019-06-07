@@ -1,4 +1,7 @@
 *.jpg
 *.csv
+*.zip
 **/data/
 **/.ipynb_checkpoints/
+**/traces/*
+**/__pycache__/
