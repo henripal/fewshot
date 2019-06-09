@@ -1,5 +1,4 @@
 *.jpg
-*.csv
 *.zip
 **/data/
 **/.ipynb_checkpoints/

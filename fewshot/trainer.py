@@ -14,7 +14,7 @@ def run_training(model, n_epochs, data, optimizer, loss_func, gpu_id=0, root='./
                                  batch_size=bs, shuffle=True,
                                  num_workers=4)
     test_dl = torch.utils.data.DataLoader(data.test_ds,
-                                    batch_size=bs*2, shuffle=True,
+                                    batch_size=bs*2, shuffle=False,
                                     num_workers=4)
 
 
@@ -81,7 +81,7 @@ def evaluate(model, data, gpu_id, n_classes, bs=64):
     runs top-1 and top-5 accuracy on test set for the model for each class
     """
     test_dl = torch.utils.data.DataLoader(data.test_ds,
-                                    batch_size=bs*2, shuffle=True,
+                                    batch_size=bs*2, shuffle=False,
                                     num_workers=4)
     model.eval()
 
@@ -105,5 +105,18 @@ def evaluate(model, data, gpu_id, n_classes, bs=64):
             occurences[labels] += 1
 
     return correct1_all/occurences, correct5_all/occurences, occurences
+
+def pretty_print_eval(c1, c5, data):
+    """
+    prints evaluation data in a table
+    """
+    c1, c5  = c1.cpu().numpy(), c5.cpu().numpy()
+    print('{:23}{:>10}{:>10}'.format('Category','Top-1','Top-5'))
+    print('-'*43)
+    for i, cname in enumerate(data.idx2name):
+        print('{:23}{:10.1f}{:10.1f}'.format(cname,c1[i]*100,c5[i]*100))
+    print('='*43)
+    print('{:23}{:10.1f}{:10.1f}'.format('Average',np.nanmean(c1)*100,np.nanmean(c5)*100))
+
         
 

@@ -3,6 +3,7 @@ import os
 import PIL
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 import torch
@@ -47,6 +48,7 @@ class FashionData:
         self.filter_existing_images()
         self.filter_top20(top20)
         self.make_label_utils()
+        self.calc_weights()
         
         
         self.train_ds = FashionDataset(self.label_data[self.label_data.year % 2 == 0].reset_index(drop=True),
@@ -59,6 +61,16 @@ class FashionData:
     def make_label_utils(self):
         self.idx2name = self.label_data.articleType.value_counts().index.values
         self.name2idx = {name: idx for idx, name in enumerate(self.idx2name)}
+        self.n_classes = len(self.idx2name)
+
+    def calc_weights(self):
+        """
+        calculate inverse frequency of classes
+        """
+        train_ld = self.label_data[self.label_data.year % 2 == 0]
+        self.weights = np.zeros(self.n_classes)
+        for label, count in train_ld.articleType.value_counts().iteritems():
+            self.weights[self.name2idx[label]] = 1/count
             
     def filter_existing_images(self):
         """
