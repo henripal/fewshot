@@ -106,17 +106,20 @@ def evaluate(model, data, gpu_id, n_classes, bs=64):
 
     return correct1_all/occurences, correct5_all/occurences, occurences
 
-def pretty_print_eval(c1, c5, data):
+def pretty_print_eval(c1, c5, occ,  data):
     """
     prints evaluation data in a table
+    takes the averge of the accuracies for classes for which there is at least 1 example in the data.
     """
-    c1, c5  = c1.cpu().numpy(), c5.cpu().numpy()
+    c1, c5, occ  = c1.cpu().numpy(), c5.cpu().numpy(), occ.cpu().numpy()
+    mask = occ > 0
     print('{:23}{:>10}{:>10}'.format('Category','Top-1','Top-5'))
     print('-'*43)
     for i, cname in enumerate(data.idx2name):
-        print('{:23}{:10.1f}{:10.1f}'.format(cname,c1[i]*100,c5[i]*100))
+        if mask[i]:
+            print('{:23}{:10.1f}{:10.1f}'.format(cname,c1[i]*100,c5[i]*100))
     print('='*43)
-    print('{:23}{:10.1f}{:10.1f}'.format('Average',np.nanmean(c1)*100,np.nanmean(c5)*100))
+    print('{:23}{:10.1f}{:10.1f}'.format('Average',np.nanmean(c1[mask])*100,np.nanmean(c5[mask])*100))
 
         
 
