@@ -62,13 +62,10 @@ The idea is to try out three few-shot papers on the fashion products dataset: [P
 
 A series of [blog posts](https://towardsdatascience.com/advances-in-few-shot-learning-a-guided-tour-36bc10a68b77) with their [accompanying github repo](https://github.com/oscarknagg/few-shot) show the application on these methods to the two archetypal few-shot datasets, Omniglot and miniImageNet.
 
-There is maybe a bug in the author's implementation of the data loading [here](https://github.com/oscarknagg/few-shot/blob/672de83a853cc2d5e9fe304dc100b4a735c10c15/few_shot/proto.py#L50) - `queries` should be `embedding[q_queries * k_way:]` not `embedding[n_shot * k_way]`. See the corresponding data generation step [here](https://github.com/oscarknagg/few-shot/blob/672de83a853cc2d5e9fe304dc100b4a735c10c15/few_shot/core.py#L81).
-
-To avoid chasing bugs while not wasting time reimplementing everything from scratch, I'll be doing a minimal / loose reimplementation strongly based on @oscarknagg's repo. 
 
 ### Prototypical Networks
 
-For now we've reimplemented the dataset as applied to the Fasion Products dataset (without the bug :)) and added an episode viz function in `fewshot.proto.sampler`. Corresponding exploration notebook is [here](./notebooks/proto-exploration.ipynb).
+For now we've reimplemented the dataset as applied to the Fasion Products dataset and added an episode viz function in `fewshot.proto.sampler`. Corresponding exploration notebook is [here](./notebooks/proto-exploration.ipynb).
 
 
 
