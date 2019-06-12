@@ -52,11 +52,27 @@ We then took the best model from the training above, and fine-tuned it on the ra
 
 Beyond the extensions suggested, here are some things I would have liked to try:
 - fix the training and model selectin procedure to rely on a single metric rather than go back and forth between two
-- use more data augmentation. I almost added some color/saturation variations but then thought it could be problematic for some classes; for example Jeans would become a problem category if I changed their colors. I erred on the cautious side and didn't add it. Similarly affine transformations - some of these items, like watches or lipstics, are quite-geometry dependent so I didn't use any affine transformation.
+- use more data augmentati:on. I almost added some color/saturation variations but then thought it could be problematic for some classes; for example Jeans would become a problem category if I changed their colors. I erred on the cautious side and didn't add it. Similarly affine transformations - some of these items, like watches or lipstics, are quite-geometry dependent so I didn't use any affine transformation.
 - change the fine-tuning strategy to a twop-step strategy - first train only the FC layer, than train all layers together
 - use a smarter LR scheduling policy, like one-cycle
 
 ## Part 2 - Few shot learning
+
+The idea is to try out three few-shot papers on the fashion products dataset: [Prototypical Networks](https://arxiv.org/pdf/1703.05175.pdf), [Matching Networks](https://arxiv.org/pdf/1606.04080.pdf), and [Model-Agnostic Meta-Learning](https://arxiv.org/pdf/1703.03400.pdf) (or MAML).
+
+A series of [blog posts](https://towardsdatascience.com/advances-in-few-shot-learning-a-guided-tour-36bc10a68b77) with their [accompanying github repo](https://github.com/oscarknagg/few-shot) show the application on these methods to the two archetypal few-shot datasets, Omniglot and miniImageNet.
+
+There is maybe a bug in the author's implementation of the data loading [here](https://github.com/oscarknagg/few-shot/blob/672de83a853cc2d5e9fe304dc100b4a735c10c15/few_shot/proto.py#L50) - `queries` should be `embedding[q_queries * k_way:]` not `embedding[n_shot * k_way]`. See the corresponding data generation step [here](https://github.com/oscarknagg/few-shot/blob/672de83a853cc2d5e9fe304dc100b4a735c10c15/few_shot/core.py#L81).
+
+To avoid chasing bugs while not wasting time reimplementing everything from scratch, I'll be doing a minimal / loose reimplementation strongly based on @oscarknagg's repo. 
+
+### Prototypical Networks
+
+For now we've reimplemented the dataset as applied to the Fasion Products dataset (without the bug :)) and added an episode viz function in `fewshot.proto.sampler`. Corresponding exploration notebook is [here](./notebooks/proto-exploration.ipynb).
+
+
+
+
 
 
 

@@ -34,8 +34,14 @@ def tensor2img(tensor):
     """
     converts tensor and displays image
     """
+    plt.imshow(tensor2numpy(tensor))
+
+def tensor2numpy(tensor):
+    """
+    converts tensor to displayable numpy array
+    """
     rescaled = (tensor - tensor.min())/(tensor.max() - tensor.min())
-    plt.imshow(rescaled.numpy().swapaxes(0, 2).swapaxes(0, 1))
+    return rescaled.numpy().swapaxes(0, 2).swapaxes(0, 1).astype('float')
 
 class FashionData:
     def __init__(self, csv_file, images_root, train_transform=None, test_transform=None, top20=False):
