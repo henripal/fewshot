@@ -67,8 +67,31 @@ A series of [blog posts](https://towardsdatascience.com/advances-in-few-shot-lea
 
 For now we've reimplemented the dataset as applied to the Fasion Products dataset and added an episode viz function in `fewshot.proto.sampler`. Corresponding exploration notebook is [here](./notebooks/proto-exploration.ipynb).
 
+Our first iteration of the training loop, in the exploration notebook, gets to these results with a resnet18 architecture and a 100-dimensional embedding space:
 
+|Loss | Top-1 Val. Accuracy |
+| ------------- | ------------- |
+| 2-shot, 20-way  |  72.9 |
+| 1-shot, 20-way | 61.1  |
+| 2-shot, 5-way  |  88.4 |
+| 1-shot, 5-way | 84.4  |
 
+Comparing these results to those in the paper, it seems that the 'difficulty' of this fashion dataset is somewhere between Omniglot and miniImageNet. That said, they're extremely good results (maybe too good - check for leakage?).
+
+### Prototypical Networks - ideas and extensions
+
+To improve our results on this task, I'm thinking of a couple of new approaches:
+1. **Better metric for distances on the embedding manifold:** The embedding space is definitely not flat - so using plain old L2 distance seems like it wouldn't be the most appropriate. Inspired by Natural Gradient Descent, whose idea is to normalize gradients by the curvature of the space as estimated by the Fisher (see e.g. [Martens 2014](https://arxiv.org/abs/1412.1193)), we would like to compute the prototypes using a better metric than L2. That said, the empirical methods to compute the Fisher seem to be quite bad [Limitations of the Empirical Fisher Approximation](https://arxiv.org/abs/1905.12558).
+
+The idea would then be to resort to a heuristic normalization (maybe a simple diagonal pre-conditioning like in RMSProp) to compute the distances. 
+
+2. **Data augmentation strategies** It would be interesting to see the impact of traditional data augmentation strategies. In addition, two interesting areas to explore would be:
+- Using adversarial examples as augmentation, as in the semi-supervised approach proposed in [Virtual Adversarial Training](https://arxiv.org/pdf/1704.03976.pdf) - this technique had the best results in [this evaluation of deep semi-supervised learning](https://arxiv.org/abs/1804.09170)
+- Using [mixup](https://arxiv.org/abs/1710.09412) - seems like it would be particularly important for the embedding space to be linearly separable, and using mixup data augmentation would maybe help with that?
+
+That said, I'll probably look at MAML before implementing these two ideas.
+
+## MAML
 
 
 

@@ -34,7 +34,7 @@ class NShotFashionDataset(FashionDataset):
         if len(self.label_data) == 0: raise FileNotFoundError('Image directory is empty or does not match csv file')
 
     def filter_classlist(self):
-        self.label_data = self.label_data[self.label_data.articleType.isin(self.classlist)]
+        self.label_data = self.label_data[self.label_data.articleType.isin(self.classlist)].reset_index(drop=True)
 
     def make_label_utils(self):
         self.idx2name = self.label_data.articleType.value_counts().index.values
