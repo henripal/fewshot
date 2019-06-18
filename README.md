@@ -63,13 +63,13 @@ The idea is to try out three few-shot papers on the fashion products dataset: [P
 A series of [blog posts](https://towardsdatascience.com/advances-in-few-shot-learning-a-guided-tour-36bc10a68b77) with their [accompanying github repo](https://github.com/oscarknagg/few-shot) show the application on these methods to the two archetypal few-shot datasets, Omniglot and miniImageNet.
 
 
-### Prototypical Networks
+### Prototypical Networks && Matching Networks
 
 For now we've reimplemented the dataset as applied to the Fasion Products dataset and added an episode viz function in `fewshot.proto.sampler`. Corresponding exploration notebook is [here](./notebooks/proto-exploration.ipynb).
 
 Our first iteration of the training loop, in the exploration notebook, gets to these results with a resnet18 architecture and a 100-dimensional embedding space:
 
-|Loss | Top-1 Val. Accuracy |
+|Problem | Top-1 Val. Accuracy |
 | ------------- | ------------- |
 | 2-shot, 20-way  |  72.9 |
 | 1-shot, 20-way | 61.1  |
@@ -77,6 +77,8 @@ Our first iteration of the training loop, in the exploration notebook, gets to t
 | 1-shot, 5-way | 84.4  |
 
 Comparing these results to those in the paper, it seems that the 'difficulty' of this fashion dataset is somewhere between Omniglot and miniImageNet. That said, they're extremely good results (maybe too good - check for leakage?).
+
+For now we bundle prototypical and matching networks together, as matching networks is essentially prototypical networks without the averaging and with cosine distance (which the prototypical networks paper shows to be not as good as the Euclidean distance). Would be nice to check this on this dataset!
 
 ### Prototypical Networks - ideas and extensions
 
@@ -91,7 +93,22 @@ The idea would then be to resort to a heuristic normalization (maybe a simple di
 
 That said, I'll probably look at MAML before implementing these two ideas.
 
-## MAML
+### MAML
+
+Our results on MAML (which are sparse!) are in [this notebook](./notebooks/maml-exploration.ipynb). This method is conceptually more interesting than the prototypical networks approach, as we don't really train a network on many examples to produce good 'representations' of the data. Rather, we train a network to be better at learning. This implies taking the gradient of the gradient, and is significantly trickier in terms of implementation. We relied fully on @oscarknagg's implementation here, modified to fit the fashion dataset in [maml.py](.fewshot/maml/maml.py).
+
+Contrary to the prototypical networks example, we have to make the models comply to the task (notably by implementing the `functional_forward` method), so it isn't straightforward to use off the shelf resnets - we're using the traditional stacked convolution network typical of these tasks. This might mean it's an unfair comparison of methods.
+
+What I've implemented so far is a rough (but working!) training loop in the [notebook](./notebooks/maml-exploration.ipynb). The validation accuracy is definitely increasing but the algorithm is quite slow to train. Will add results here once finished!
+
+|Loss | Top-1 Val. Accuracy |
+| ------------- | ------------- |
+| 5-shot, 10-way  |  ? |
+
+# Conclusion
+
+Wish I had more time to get some actual comparison numbers for MAML and to implement the two extra ideas in the prototypical networks secion! Might get to it when more time comes by...
+
 
 
 

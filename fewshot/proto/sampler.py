@@ -50,6 +50,7 @@ class NShotTaskSampler(torch.utils.data.Sampler):
                  n: int = None,
                  k: int = None,
                  q: int = None,
+                 bs: int = 1,
                  ):
         """PyTorch Sampler subclass that generates batches of n-shot, k-way, q-query tasks.
         Each n-shot task contains a "support set" of `k` sets of `n` samples and a "query set" of `k` sets
@@ -76,6 +77,7 @@ class NShotTaskSampler(torch.utils.data.Sampler):
         self.k = k
         self.n = n
         self.q = q
+        self.bs = bs
 
 
         self.i_task = 0
@@ -87,44 +89,45 @@ class NShotTaskSampler(torch.utils.data.Sampler):
     def __iter__(self):
         for _ in range(self.episodes_per_epoch):
             batch = []
+            for b in range(self.bs):
 
 
-            # Get random classes
-            counts = self.dataset.label_data.articleType.value_counts()
-            potential_classes = counts[counts > (self.n + self.q)].index.values
+                # Get random classes
+                counts = self.dataset.label_data.articleType.value_counts()
+                potential_classes = counts[counts > (self.n + self.q)].index.values
 
-            episode_classes = np.random.choice(
-                potential_classes,
-                size=self.k,
-                replace=False
-                )
+                episode_classes = np.random.choice(
+                    potential_classes,
+                    size=self.k,
+                    replace=False
+                    )
 
-            support_k = {k: None for k in episode_classes}
+                support_k = {k: None for k in episode_classes}
 
-            for k in episode_classes:
-                # which elements of the dataset are in k?
-                indices_k = self.dataset.label_data[
-                    self.dataset.label_data.articleType == k
-                    ].index.values
-                support = np.random.choice(indices_k,
-                    size=self.n,
-                    replace=False) 
-                support_k[k] = support
+                for k in episode_classes:
+                    # which elements of the dataset are in k?
+                    indices_k = self.dataset.label_data[
+                        self.dataset.label_data.articleType == k
+                        ].index.values
+                    support = np.random.choice(indices_k,
+                        size=self.n,
+                        replace=False) 
+                    support_k[k] = support
 
-                for idx in support:
-                    batch.append(idx)
+                    for idx in support:
+                        batch.append(idx)
 
-            for k in episode_classes:
-                indices_k = self.dataset.label_data[
-                    self.dataset.label_data.articleType == k
-                    ].index.values
-                support = support_k[k]
-                indices_k = [idx for idx in indices_k if idx not in support]
-                query = np.random.choice(indices_k,
-                    size=self.q,
-                    replace=False)
-                for idx in query:
-                    batch.append(idx)
+                for k in episode_classes:
+                    indices_k = self.dataset.label_data[
+                        self.dataset.label_data.articleType == k
+                        ].index.values
+                    support = support_k[k]
+                    indices_k = [idx for idx in indices_k if idx not in support]
+                    query = np.random.choice(indices_k,
+                        size=self.q,
+                        replace=False)
+                    for idx in query:
+                        batch.append(idx)
 
             yield batch
 
