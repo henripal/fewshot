@@ -103,7 +103,7 @@ What I've implemented so far is a rough (but working!) training loop in the [not
 
 |Loss | Top-1 Val. Accuracy |
 | ------------- | ------------- |
-| 5-shot, 10-way  |  51.5 after 10 epochs |
+| 5-shot, 10-way  |  71.8 after 30 epochs |
 
 # Conclusion
 
